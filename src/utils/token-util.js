@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 
 const tokenSign = async (user) => {
-    const payload = { email: user.email }
+    const payload = { _id: user._id, email: user.email }
     return jwt.sign(
         payload,
         process.env.SECRET_KEY,
@@ -9,4 +9,12 @@ const tokenSign = async (user) => {
     )
 }
 
-module.exports = { tokenSign }
+const verifyToken = async (token) => {
+    try {
+      return jwt.verify(token, process.env.SECRET_KEY)
+    } catch (e) {
+      return null
+    }
+}
+
+module.exports = { tokenSign, verifyToken }
