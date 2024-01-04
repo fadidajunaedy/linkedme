@@ -48,6 +48,20 @@ const login = async (request) => {
 
 const update = async (user, request) => {
     request = validate(updateUserValidation, request)
+    const userInDatabase = await User.findById(user.id)
+    if (!userInDatabase) {
+        throw new ResponseError(404, "User is not found")
+    }
+
+    if (request.profile_picture) {
+        fs.unlink(`src/assets/images/profile/${userInDatabase.profile_picture}/`, (err) => {
+            if (err) {
+                console.log('Previous file not found, insert new file');
+            } else {
+                console.log('Previous file deleted, insert new file');
+            }
+        })
+    }
     
     return await User.findByIdAndUpdate(user.id, request, { new: true })
 }
@@ -62,9 +76,23 @@ const get = async (user) => {
     return data
 }
 
+const changePassword = async (user, request) => {
+    request = validate(changePasswordValidation, request)
+
+    const checkPassword = verifyPassword(request.current_password, user.password)
+    if (!checkPassword) {
+        throw new ResponseError(401, "Current password is not match!")
+    }
+
+    const newPassword = hashPassword(request.new_password)
+
+    return await User.findByIdAndUpdate(user.id, { password: newPassword }, { new: true })
+}
+
 module.exports = {
     register,
     login,
     update,
-    get
+    get,
+    changePassword
 }
