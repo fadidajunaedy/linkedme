@@ -23,7 +23,7 @@ const register = async (request) => {
         throw new ResponseError(400, "Email already registered")
     }
 
-    request.password = hashPassword(request.password)
+    request.password = await hashPassword(request.password)
 
     const newUser = await User.create(request)
     
@@ -38,7 +38,7 @@ const login = async (request) => {
         throw new ResponseError(400, "Email or password is wrong")
     }
 
-    const checkPassword = verifyPassword(request.password, user.password)
+    const checkPassword = await verifyPassword(request.password, user.password)
     if (!checkPassword) {
         throw new ResponseError(401, "Email or password is wrong")
     }
@@ -48,7 +48,7 @@ const login = async (request) => {
 
 const update = async (user, request) => {
     request = validate(updateUserValidation, request)
-    const userInDatabase = await User.findById(user.id)
+    const userInDatabase = await User.findOne({ _id: user._id })
     if (!userInDatabase) {
         throw new ResponseError(404, "User is not found")
     }
@@ -63,11 +63,11 @@ const update = async (user, request) => {
         })
     }
     
-    return await User.findByIdAndUpdate(user.id, request, { new: true })
+    return await User.findByIdAndUpdate(user._id, request, { new: true })
 }
 
 const get = async (user) => {
-    const data = await User.findById(user.id)
+    const data = await User.findOne({ _id: user._id })
     
     if (!data) {
         throw new ResponseError(404, "User is not found")
@@ -79,14 +79,14 @@ const get = async (user) => {
 const changePassword = async (user, request) => {
     request = validate(changePasswordValidation, request)
 
-    const checkPassword = verifyPassword(request.current_password, user.password)
+    const checkPassword = await verifyPassword(request.current_password, user.password)
     if (!checkPassword) {
         throw new ResponseError(401, "Current password is not match!")
     }
 
-    const newPassword = hashPassword(request.new_password)
+    const newPassword = await hashPassword(request.new_password)
 
-    return await User.findByIdAndUpdate(user.id, { password: newPassword }, { new: true })
+    return await User.findByIdAndUpdate(user._id, { password: newPassword }, { new: true })
 }
 
 module.exports = {
