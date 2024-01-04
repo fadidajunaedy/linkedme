@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken")
 const User = require("../models/user-model.js")
+const UserLink = require("../models/user-link-model.js")
 const { ResponseError } = require("../error/response-error.js")
 const { 
     hashPassword, 
@@ -26,6 +26,7 @@ const register = async (request) => {
     request.password = await hashPassword(request.password)
 
     const newUser = await User.create(request)
+    const newUserLink = await UserLink.create({ user_id: newUser._id })
     
     return newUser
 }
