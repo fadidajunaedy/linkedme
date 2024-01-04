@@ -12,7 +12,6 @@ dbConnect()
 
 const web = express()
 
-web.use(cookieParser())
 web.use(express.json())
 web.use(express.urlencoded({ extended: true }))
 web.use(

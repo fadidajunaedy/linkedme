@@ -27,8 +27,7 @@ const userLinkSchema = new Schema({
     },
     links: {
         type: [linkSchema],
-        default: [],
-        required: true
+        default: []
     },
 })
 
