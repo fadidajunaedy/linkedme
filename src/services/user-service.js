@@ -46,7 +46,25 @@ const login = async (request) => {
     return await tokenSign(user)
 }
 
+const update = async (user, request) => {
+    request = validate(updateUserValidation, request)
+    
+    return await User.findByIdAndUpdate(user.id, request, { new: true })
+}
+
+const get = async (user) => {
+    const data = await User.findById(user.id)
+    
+    if (!data) {
+        throw new ResponseError(404, "User is not found")
+    }
+
+    return data
+}
+
 module.exports = {
     register,
-    login
+    login,
+    update,
+    get
 }
