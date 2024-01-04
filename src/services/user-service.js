@@ -5,6 +5,7 @@ const {
     hashPassword, 
     verifyPassword 
 } = require("../utils/password-util.js")
+const { tokenSign } = require("../utils/token-util.js")
 const { validate } = require("../validations/validation.js")
 const {
     registerUserValidation,
@@ -29,6 +30,23 @@ const register = async (request) => {
     return newUser
 }
 
+const login = async (request) => {
+    request= validate(loginUserValidation, request)
+
+    const user = await User.findOne({ email: request.email })
+    if (!user) {
+        throw new ResponseError(400, "Email or password is wrong")
+    }
+
+    const checkPassword = verifyPassword(request.password, user.password)
+    if (!checkPassword) {
+        throw new ResponseError(401, "Email or password is wrong")
+    }
+
+    return await tokenSign(user)
+}
+
 module.exports = {
-    register
+    register,
+    login
 }
