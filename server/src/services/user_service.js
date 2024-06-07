@@ -6,7 +6,7 @@ const {
     changePasswordUserBodyValidation
 } = require("../validations/user_validation.js")
 const validate = require("../validations/validation.js")
-const { generateAccessToken } = require("../utils/generate_token.js")
+const generateAccessToken = require("../utils/generate_token.js")
 const {
     hashPassword,
     comparePassword
