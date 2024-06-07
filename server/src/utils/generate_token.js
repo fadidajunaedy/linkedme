@@ -9,6 +9,4 @@ const generateAccessToken = async (user) => {
     )
 }
 
-module.exports = {
-    generateAccessToken
-}
+module.exports = generateAccessToken

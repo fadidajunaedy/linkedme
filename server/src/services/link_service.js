@@ -1,6 +1,7 @@
 const { User, Link } = require("../application/database.js")
 const { linkBodyValidation } = require("../validations/link_validation.js")
 const validate = require("../validations/validation.js")
+const checkDuplicateKeys = require("../utils/check_duplicate_keys.js")
 const ResponseError = require("../error/response_error.js")
 
 const create = async (user, request) => {
@@ -16,6 +17,11 @@ const update = async (user, request) => {
     const link = await Link.findOne({ where: { email: user.email } })
     if (!link) {
         throw new ResponseError(404, "User's Link is not found")
+    }
+
+    let duplicateKeys = checkDuplicateKeys(request.links)
+    if (duplicateKeys) {
+        throw new ResponseError(401, `Duplicate platform found: ${duplicateKeys}`)
     }
     
     request.links = JSON.stringify(request.links)
